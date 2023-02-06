@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <canvas id="canvas" width="900" height="600"></canvas>
+    </body>
+
+    <form>
+        <label for="fuel">Propellant:</label>
+        <input type="range" id="fuel" name="fuel" min="0" max="1" step="0.01">
+
+        <label for="umain">main thrust:</label>
+        <input type="range" id="umain" name="main" min="0" max="1" step="0.01">
+
+        <label for="uleft">left:</label>
+        <input type="range" id="uleft" name="left" min="0" max="1" step="0.01">
+
+        <label for="uright">right:</label>
+        <input type="range" id="uright" name="right" min="0" max="1" step="0.01">
+    </form>
+
+    <pre>Arrow keys control thrusters. R reset. P cycle pre-programs. M manual mode. 
+A toggle auto-stabilization. B rebalance main thrust. +/- zoom view. </pre>
+
+    <form>
+        <label for="mode">Control mode:</label>
+        <select name="mode" id="mode">
+        <optgroup label="Manual modes">
+            <option value="manual">Full manual</option>
+            <option value="auto">Auto-balance</option>
+        </optgroup>
+        <optgroup label="Open-loop programs">
+            <option value="preprog1">Preprogram 1</option>
+            <option value="preprog2">Preprogram 2</option>
+            <option value="preprog3">Preprogram 3</option>
+        </optgroup>
+        </select>
+    </form>
+
+    <head>
+        <meta charset="utf-8"/>
+        <script type="text/javascript" src="rocket.js"></script>
+        <script type="text/javascript" src="planeview.js"></script>
+        <script type="text/javascript" src="main.js"></script>
+    </head>
+
+</html>
