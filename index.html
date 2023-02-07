@@ -24,9 +24,9 @@ A toggle auto-stabilization. B rebalance main thrust. L toggle landing auto-burn
     <form>
         <label for="mode">Control mode:</label>
         <select name="mode" id="mode">
-        <optgroup label="Manual modes">
-            <option value="manual">Full manual</option>
-            <option value="auto">Auto-balance</option>
+        <optgroup label="(Semi-)manual modes">
+            <option value="manual">Manual thrusters</option>
+            <option value="auto">Auto-stabilize</option>
         </optgroup>
         <optgroup label="Open-loop programs">
             <option value="preprog1">Preprogram 1</option>
@@ -34,9 +34,6 @@ A toggle auto-stabilization. B rebalance main thrust. L toggle landing auto-burn
             <option value="preprog3">Preprogram 3</option>
         </optgroup>
         </select>
-
-        <input type="checkbox" id="landing" name="landing">
-        <label for="landing">Enable auto-landing</label>
     </form>
 
     <head>

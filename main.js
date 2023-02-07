@@ -19,13 +19,15 @@ function printSimulatorStats(ctx, timestamp, fpsval) {
     ctx.fillText("time: " + timestamp.toFixed(3) + " sec" + " [" + fpsval.toFixed(1) + " fps]", 5, 15);
 }
 
-function printRocketStats(ctx, rkt, highpoint) {
+function printRocketStats(ctx, rkt, highpoint, brakeBurn) {
     ctx.font = "15px Arial";
     ctx.fillStyle = "white";
     ctx.fillText("elevation: " + rkt.y.toFixed(2) + " m", 5, 45);
     ctx.fillText("vert. vel: " + rkt.vy.toFixed(2) + " m/s", 5, 60);
     ctx.fillText("horz. pos: " + rkt.x.toFixed(2) + " m", 5, 75);
     ctx.fillText("ang. vel: " + rkt.omega.toFixed(2) + " rad/s", 5, 90);
+
+    ctx.fillText("auto-burn: " + (brakeBurn ? "ON" : "OFF"), 5, 575);
 
     ctx.font = "25px Arial";
     ctx.fillText("highpoint: " + highpoint.toFixed(2) + " m", 600, 30);
@@ -79,7 +81,6 @@ var input_umain = document.getElementById("umain");
 var input_uleft = document.getElementById("uleft");
 var input_uright = document.getElementById("uright");
 var input_mode = document.getElementById("mode");
-var input_landing = document.getElementById("landing");
 
 var MyRocket = createDefaultRocket();
 const initState = MyRocket.state();
@@ -126,7 +127,6 @@ function reset_state() {
     MyRocket.resetLeftRight();
     MyRocket.balanceMainThrust();
     autoBraking = false;
-    input_landing.removeAttribute('checked');
     theta_ref = MyRocket.theta;
     tsim = 0.0;
     frame = 0;
@@ -178,7 +178,7 @@ function refresh() {
     PV.unitTransform(ctx);   
     filtered_fpsval = filter_beta * filtered_fpsval + (1.0 - filter_beta) * (1000.0 / elapsedTime);
     printSimulatorStats(ctx, tsim, filtered_fpsval); 
-    printRocketStats(ctx, MyRocket, maxh);
+    printRocketStats(ctx, MyRocket, maxh, autoBraking);
     PV.setTransform(ctx);
 
     input_fuel.value = (MyRocket.mass - MyRocket.prop.drymass) / (MyRocket.prop.wetmass);
@@ -248,11 +248,6 @@ function keyDownEvent(e)
 
     if (key == 'l' || key == 'L') {
         autoBraking = !autoBraking; // toggle landing program
-        if (autoBraking) {
-            input_landing.setAttribute('checked', 'checked');
-        } else {
-            input_landing.removeAttribute('checked');
-        }
         return;
     }
 
