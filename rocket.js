@@ -264,6 +264,23 @@ function autoStabilizeOmega(rkt,
   } 
 }
 
+function landingProgram(rkt,
+                        tauref = 1.00,
+                        incrate = 0.25,
+                        decrate = 0.25)
+{
+   const ypos = rkt.y;
+   const ydot = rkt.vy;
+   const ydot_ref = (rkt.prop.L / 2.0 - ypos - rkt.prop.d) / tauref;
+   if (Math.sin(rkt.theta) > 0.95) {
+      if (ydot < ydot_ref - 0.05) {
+         rkt.mainThrustInc(incrate);
+      } else if (ydot > ydot_ref + 0.05) {
+         rkt.mainThrustInc(-decrate);
+      }
+   }
+}
+
 function drawRocket(ctx, rkt, thrusterGraphics = true) {
    const dh = rkt.prop.d / 2.0;
    const lh = rkt.prop.L / 2.0;

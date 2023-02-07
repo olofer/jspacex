@@ -10,6 +10,7 @@
 // Set (current) main thrust balance value with 'B'.
 // Reset game state with 'R'.
 // Cycle through open loop thruster programs with 'P'.
+// Engage landing burn auto-pilot with 'L'.
 //
 
 function printSimulatorStats(ctx, timestamp, fpsval) {
@@ -33,7 +34,7 @@ function printRocketStats(ctx, rkt, highpoint) {
         ctx.fillStyle = "red";
         ctx.fillText("crash score: " + (-Math.abs(rkt.x)).toFixed(2), 600, 60);
     } else if (rkt.isLanded()) {
-        ctx.fillStyle = "green";
+        ctx.fillStyle = "yellow";
         ctx.fillText("landing score: " + (highpoint - Math.abs(rkt.x)).toFixed(2), 600, 60);
     }
 }
@@ -78,6 +79,7 @@ var input_umain = document.getElementById("umain");
 var input_uleft = document.getElementById("uleft");
 var input_uright = document.getElementById("uright");
 var input_mode = document.getElementById("mode");
+var input_landing = document.getElementById("landing");
 
 var MyRocket = createDefaultRocket();
 const initState = MyRocket.state();
@@ -93,6 +95,7 @@ PV.xtick = 5.0;
 PV.ytick = 5.0;
 console.log(PV);
 
+let autoBraking = false;
 let controlMode = 2;
 input_mode.selectedIndex = controlMode;
 const controlPreprograms = [getPreprogrammedThrust1, 
@@ -122,12 +125,13 @@ function reset_state() {
     MyRocket.setState(initState);
     MyRocket.resetLeftRight();
     MyRocket.balanceMainThrust();
+    autoBraking = false;
+    input_landing.removeAttribute('checked');
     theta_ref = MyRocket.theta;
     tsim = 0.0;
     frame = 0;
     maxh = 0.0;
     startTime = Date.now();
-    console.log("reset");
 }
 
 function refresh() { 
@@ -136,17 +140,21 @@ function refresh() {
     var elapsedTime = currentTime - startTime;
     startTime = currentTime;
 
+    if (elapsedTime == 0.0) return;
+
     var elapsedSec = elapsedTime / 1000.0;
 
     if (controlMode >= 2) {
-        usim = controlPreprograms[controlMode - 2](tsim);
-        MyRocket.setThrust(usim);
+        MyRocket.setThrust(controlPreprograms[controlMode - 2](tsim));
     } else if (controlMode == 1) {
         autoStabilizeOmega(MyRocket, theta_ref);
-        usim = MyRocket.thrust();
-    } else {
-        usim = MyRocket.thrust();
+    } 
+
+    if ((controlMode == 0 || controlMode == 1) && autoBraking) {
+        landingProgram(MyRocket);
     }
+
+    usim = MyRocket.thrust();
 
     while (elapsedSec > 0.0) {
         MyRocket.evolve(tsim, dt);
@@ -238,6 +246,16 @@ function keyDownEvent(e)
         return;
     }
 
+    if (key == 'l' || key == 'L') {
+        autoBraking = !autoBraking; // toggle landing program
+        if (autoBraking) {
+            input_landing.setAttribute('checked', 'checked');
+        } else {
+            input_landing.removeAttribute('checked');
+        }
+        return;
+    }
+
     if (controlMode != 0 && controlMode != 1) return;
 
     if (code === 39) // right
@@ -302,7 +320,6 @@ let refresher_id = setInterval(refresh, 1000 / FPS);
 WISHLIST/TASKS: 
 
 - implement stochastic disturbances or at least a height dependent fluctuating windfield
-- add feature for controlled descent (vertical speed stabilization)
 - implement a more complete autopilot; feedback path following feasible open-loop trajectory
 - allow editable rocket parameters via edit boxes UI html elements like so:
 

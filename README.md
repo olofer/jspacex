@@ -15,6 +15,7 @@ Manually (and semi-manually) control your rocket. Try to land it softly back ont
 - `M` switch to full manual mode at current state
 - `A` toggle automatic angular velocity stabilization
 - `B` set main throttle to balance gravity (for present mass)
+- `L` toggle automatic landing burn
 - `+` / `-` zoom view in and out
 
 The game gives the above guide as text below the canvas as reminder.
