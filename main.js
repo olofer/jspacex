@@ -109,6 +109,9 @@ var viewEta = 0.25;
 let FPS = 50.0;  // 20ms refresh intervals
 let dt = 0.005;  // 5ms timestep; expect 4 calls to rocket.evolve per refresh()
 
+let filtered_fpsval = 0.0;
+const filter_beta = 0.990;
+
 let theta_ref = MyRocket.theta;
 let tsim = 0.0;
 let frame = 0;
@@ -164,8 +167,9 @@ function refresh() {
     PV.setTransform(ctx);
 
     drawRocket(ctx, MyRocket);
-    PV.unitTransform(ctx);
-    printSimulatorStats(ctx, tsim, 1000.0 / elapsedTime); 
+    PV.unitTransform(ctx);   
+    filtered_fpsval = filter_beta * filtered_fpsval + (1.0 - filter_beta) * (1000.0 / elapsedTime);
+    printSimulatorStats(ctx, tsim, filtered_fpsval); 
     printRocketStats(ctx, MyRocket, maxh);
     PV.setTransform(ctx);
 
